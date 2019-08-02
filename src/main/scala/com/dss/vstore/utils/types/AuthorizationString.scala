@@ -1,17 +1,14 @@
 package com.dss.vstore.utils.types
 
 import eu.timepit.refined._
-import eu.timepit.refined.api.{Refined, Validate}
+import eu.timepit.refined.api.Refined
 import eu.timepit.refined.boolean.AllOf
 import eu.timepit.refined.collection.{MaxSize, MinSize}
-import eu.timepit.refined.string.MatchesRegex
 import shapeless.{::, HNil}
 
-import scala.util.{Failure, Success, Try}
+import scala.util.Try
 
 object AuthorizationString {
-
-  import types._
 
   type AuthorizationString = Refined[String, AuthorizationStringPredicate]
   object AuthorizationString {
@@ -23,7 +20,7 @@ object AuthorizationString {
   private type AuthorizationStringPredicate = AllOf[minIdSize :: maxIdSize :: HNil]
 
   /**
-    * Types, that validate Client ID
+    * Types, that validate th length of auth string
     */
   private type maxIdSize = MaxSize[W.`64`.T]
   private type minIdSize = MinSize[W.`64`.T]

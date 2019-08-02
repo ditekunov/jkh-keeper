@@ -4,21 +4,23 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http.ServerBinding
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
-import com.dss.vstore.utils.{ModulesChain, Requester, Bank}
+import com.dss.vstore.utils._
 import akka.http.scaladsl.server.directives.HeaderDirectives.headerValueByName
 import akka.http.scaladsl.server.Directives._
 import com.dss.vstore.utils.StatsSupport.StatsHolder
 import javax.net.ssl.SSLContext
 import akka.http.scaladsl.{ConnectionContext, Http}
+import com.dss.vstore.logic.InvalidAuthorizationStringError
 import com.dss.vstore.logic.http.directives.SecurityDirectives.checkRequester
+import com.dss.vstore.utils.types.AuthorizationString.AuthorizationString
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class EntryPoint(val modules: ModulesChain) {
-  implicit val ec: ExecutionContext            = modules.system.dispatcher // Execution Context Executor
-  implicit val system: ActorSystem             = modules.system            // Handles ActorSystem behavior
-  implicit val materializer: ActorMaterializer = ActorMaterializer()       // Handles Actors behavior
+  implicit val ec: ExecutionContext = modules.system.dispatcher // Execution Context Executor
+  implicit val system: ActorSystem = modules.system // Handles ActorSystem behavior
+  implicit val materializer: ActorMaterializer = ActorMaterializer() // Handles Actors behavior
 
   private var binding: Option[Future[ServerBinding]] = None
 
@@ -28,11 +30,25 @@ class EntryPoint(val modules: ModulesChain) {
         (rawRequester, maybeSignature, auth) =>
           checkRequester(rawRequester) { requester: Requester =>
             requester match {
-              case `Bank` => BankApiRoute()
+              case `Client` => AuthorizationString(auth) match {
+                case Success(authorizationString) => ClientApiRoute()
+                case Failure(_) =>
+                  complete(InvalidAuthorizationStringError("Client authorization string is invalid"))
+              }
+              case `Bank` => AuthorizationString(auth) match {
+                case Success(authorizationString) => BankApiRoute()
+                case Failure(_) =>
+                  complete(InvalidAuthorizationStringError("Bank authorization string is invalid"))
+              }
+              case `Receiver` => AuthorizationString(auth) match {
+                case Success(authorizationString) => ReceiverApiRoute()
+                case Failure(_) =>
+                  complete(InvalidAuthorizationStringError("Receiver authorization string is invalid"))
+              }
             }
           }
-          }
       }
+    }
 
   def main(sslContext: Option[SSLContext]): Try[StatsHolder] =
     Try({

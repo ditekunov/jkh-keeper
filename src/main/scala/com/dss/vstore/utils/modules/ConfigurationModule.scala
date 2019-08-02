@@ -1,5 +1,6 @@
 package com.dss.vstore.utils.modules
 import com.typesafe.config.{Config, ConfigFactory}
+import javax.net.ssl.SSLContext
 
 import scala.util.{Failure, Success, Try}
 
@@ -12,7 +13,6 @@ case class Timeouts(bootingTimeout: Int)
 
 trait ConfigurationModule {
   val config: ParsedConfig
-
 }
 
 trait ConfigurationModuleImpl extends ConfigurationModule {
