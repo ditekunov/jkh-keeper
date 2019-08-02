@@ -4,12 +4,13 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http.ServerBinding
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
-import com.dss.vstore.utils.ModulesChain
+import com.dss.vstore.utils.{ModulesChain, Requester, Bank}
 import akka.http.scaladsl.server.directives.HeaderDirectives.headerValueByName
 import akka.http.scaladsl.server.Directives._
 import com.dss.vstore.utils.StatsSupport.StatsHolder
 import javax.net.ssl.SSLContext
 import akka.http.scaladsl.{ConnectionContext, Http}
+import com.dss.vstore.logic.http.directives.SecurityDirectives.checkRequester
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -23,10 +24,15 @@ class EntryPoint(val modules: ModulesChain) {
 
   val routes: Route =
     pathPrefix("vstore") {
-      (headerValueByName("Client-Entity") & headerValueByName("Signature") & headerValueByName("Authorization")) {
-        (rawRequester, maybeSignature, auth) => complete("200 OK")
+      (headerValueByName("Requester") & headerValueByName("Signature") & headerValueByName("Authorization")) {
+        (rawRequester, maybeSignature, auth) =>
+          checkRequester(rawRequester) { requester: Requester =>
+            requester match {
+              case `Bank` => BankApiRoute()
+            }
+          }
+          }
       }
-    }
 
   def main(sslContext: Option[SSLContext]): Try[StatsHolder] =
     Try({
