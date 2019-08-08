@@ -14,6 +14,7 @@ import com.dss.vstore.logic.InvalidAuthorizationStringError
 import com.dss.vstore.logic.http.directives.SecurityDirectives.checkRequester
 import com.dss.vstore.logic.http.routing.BankApiRoute
 import com.dss.vstore.utils.types.AuthorizationString.AuthorizationString
+import com.dss.vstore.logic.http.routing.client.api.ClientApiRoute
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
