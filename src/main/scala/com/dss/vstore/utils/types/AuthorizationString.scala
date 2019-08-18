@@ -24,6 +24,4 @@ object AuthorizationString {
     */
   private type maxIdSize = MaxSize[W.`64`.T]
   private type minIdSize = MinSize[W.`64`.T]
-
-
 }

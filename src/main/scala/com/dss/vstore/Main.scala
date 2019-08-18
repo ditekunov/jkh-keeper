@@ -43,9 +43,3 @@ object Main extends App {
       println(s"Bad endpoint ssl config: ${ex.getMessage}")
   }
 }
-
-
-}
-
-
-}
