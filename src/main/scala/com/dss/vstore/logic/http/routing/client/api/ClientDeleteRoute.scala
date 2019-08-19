@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.directives.BasicDirectives.extractRequest
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.http.scaladsl.server.RouteConcatenation._
 import com.dss.vstore.utils.modules.ParsedConfig
-import com.dss.vstore.utils.types.LoginHash
+import com.dss.vstore.utils.types.Login.Login
 
 import scala.concurrent.ExecutionContext
 
@@ -25,16 +25,16 @@ class ClientDeleteRoute(client: ClientMeta, modules: ModulesChain) {
   /**
     * Returns a [[Route]] that handles GET operations on objects
     */
-  def deleteClient(login: LoginHash)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
+  def deleteClient(login: Login)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
 //    Logger.debug(s"DELETE_CLIENT_BENCH $getCurrentLocalDateTimeStamp start deleteClient")
     delete {
       extractRequest { req =>
-        archiveClient(login: LoginHash)
+        archiveClient(login)
       }
     }
   }
 
-  def archiveClient(login: LoginHash): Route = { complete("ARCHIVE CLIENT") }
+  def archiveClient(login: Login): Route = { complete("ARCHIVE CLIENT") }
 
 }
 

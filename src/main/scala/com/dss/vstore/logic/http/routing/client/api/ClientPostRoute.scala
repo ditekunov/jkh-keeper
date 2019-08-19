@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.directives.BasicDirectives.extractRequest
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.http.scaladsl.server.RouteConcatenation._
 import com.dss.vstore.utils.modules.ParsedConfig
-import com.dss.vstore.utils.types.LoginHash
+import com.dss.vstore.utils.types.Login.Login
 
 import scala.concurrent.ExecutionContext
 
@@ -25,7 +25,7 @@ class ClientPostRoute(client: ClientMeta, modules: ModulesChain) {
   /**
     * Returns a [[Route]] that handles GET operations on objects
     */
-  def postClient(login: LoginHash)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
+  def postClient(login: Login)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
 //    Logger.debug(s"POST_CLIENT_BENCH $getCurrentLocalDateTimeStamp start postClient")
     post {
       complete("POST ROUTE")

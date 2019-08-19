@@ -18,8 +18,8 @@ import akka.http.scaladsl.server.RouteConcatenation._
 import com.dss.vstore.logic.SpecificErrors.ClientCannotBeCreatedError
 import com.dss.vstore.logic.{ClientAlreadyExistsError, InvalidRequestError}
 import com.dss.vstore.utils.modules.ParsedConfig
-import com.dss.vstore.utils.types.LoginHash.LoginHash
-import com.dss.vstore.utils.types.PasswordHash.PasswordHash
+import com.dss.vstore.utils.types.Login.Login
+import com.dss.vstore.utils.types.Password.Password
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration.FiniteDuration
@@ -37,7 +37,7 @@ class ClientPutRoute(client: ClientMeta)(implicit modules: ModulesChain) {
   /**
     * Returns a [[Route]] that handles PUT operations on Clients
     */
-  def putClient(loginHash: LoginHash, passwordHash: PasswordHash)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
+  def putClient(login: Login, password: Password)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
 //    Logger.debug(s"PUT_CLIENT_BENCH $getCurrentLocalDateTimeStamp start putClient")
     put {
       complete("PUT CLIENT")

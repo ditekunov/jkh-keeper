@@ -10,7 +10,7 @@ import akka.http.scaladsl.server.directives.BasicDirectives.extractRequest
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.http.scaladsl.server.RouteConcatenation._
 import com.dss.vstore.utils.modules.ParsedConfig
-import com.dss.vstore.utils.types.LoginHash
+import com.dss.vstore.utils.types.Login.Login
 
 import scala.concurrent.ExecutionContext
 
@@ -25,23 +25,23 @@ class ClientGetRoute(client: ClientMeta, modules: ModulesChain) {
   /**
     * Returns a [[Route]] that handles GET operations on objects
     */
-  def getClient(login: LoginHash)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
+  def getClient(login: Login)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
 //    Logger.debug(s"GET_CLIENT_BENCH $getCurrentLocalDateTimeStamp start getClient")
     get {
       extractRequest { req =>
-        getMetersData(login: LoginHash) ~
-          getDebt(login: LoginHash) ~
-          getClientMeta(login: LoginHash)
+        getMetersData(login: Login) ~
+          getDebt(login: Login) ~
+          getClientMeta(login: Login)
 
       }
     }
   }
 
-  def getMetersData(login: LoginHash): Route = {complete("GET METERS DATA")}
+  def getMetersData(login: Login): Route = {complete("GET METERS DATA")}
 
-  def getDebt(login: LoginHash): Route = {complete("GET DEBT")}
+  def getDebt(login: Login): Route = {complete("GET DEBT")}
 
-  def getClientMeta(login: LoginHash): Route = {complete("GET CLIENT")}
+  def getClientMeta(login: Login): Route = {complete("GET CLIENT")}
 
 }
 

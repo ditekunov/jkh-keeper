@@ -11,6 +11,7 @@ import akka.http.scaladsl.server.directives.RouteDirectives.complete
 import akka.http.scaladsl.server.RouteConcatenation._
 import com.dss.vstore.logic.NoSuchClientError
 import com.dss.vstore.utils.modules.ParsedConfig
+import com.dss.vstore.utils.types.Login.Login
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
@@ -25,7 +26,7 @@ class ClientHeadRoute(client: ClientMeta, modules: ModulesChain) {
   /**
     * Returns a [[Route]] that handles GET operations on objects
     */
-  def headClient(loginHash: LoginHash)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
+  def headClient(login: Login)(implicit modules: ModulesChain, ec: ExecutionContext): Route = {
 //    Logger.debug(s"HEAD_CLIENT_BENCH $getCurrentLocalDateTimeStamp start headClient")
     head {
       complete("HEAD ROUTE")

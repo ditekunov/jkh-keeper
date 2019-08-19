@@ -27,8 +27,8 @@ object ClientApiRoute {
       * Returns a [[Route]] which handles bucket operations
       */
     def apply(client: ClientMeta, auth: AuthorizationString)(implicit modules: ModulesChain): Route = {
-      lazy val loginHash = encrypter.getLoginHash(auth)
-      lazy val passwordHash = encrypter.getPasswordHash(auth)
+      lazy val loginHash = encrypter.getLogin(auth)
+      lazy val passwordHash = encrypter.getPassword(auth)
 
       def getClient = ClientGetRoute(client).getClient(loginHash)
 
