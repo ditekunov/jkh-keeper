@@ -10,19 +10,21 @@ import akka.http.scaladsl.server.Directives._
 import com.dss.vstore.utils.StatsSupport.StatsHolder
 import javax.net.ssl.SSLContext
 import akka.http.scaladsl.{ConnectionContext, Http}
-import com.dss.vstore.logic.InvalidAuthorizationStringError
+import com.dss.vstore.logic.{AccessDeniedError, InvalidAuthorizationStringError}
 import com.dss.vstore.logic.http.directives.SecurityDirectives.checkRequester
-import com.dss.vstore.logic.http.routing.{BankApiRoute, ReceiverApiRoute}
+import com.dss.vstore.logic.http.routing.{BankApiRoute, InternalApiRoute, ReceiverApiRoute}
 import com.dss.vstore.utils.types.AuthorizationString.AuthorizationString
 import com.dss.vstore.logic.http.routing.client.api.ClientApiRoute
+import com.dss.vstore.utils.modules.Encrypter
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
 class EntryPoint(val modules: ModulesChain) {
-  implicit val ec: ExecutionContext = modules.system.dispatcher // Execution Context Executor
-  implicit val system: ActorSystem = modules.system // Handles ActorSystem behavior
-  implicit val materializer: ActorMaterializer = ActorMaterializer() // Handles Actors behavior
+  implicit val ec:           ExecutionContext  = modules.system.dispatcher // Execution Context Executor
+  implicit val system:       ActorSystem       = modules.system            // Handles ActorSystem behavior
+  implicit val materializer: ActorMaterializer = ActorMaterializer()       // Handles Actors behavior
+  implicit val encrypter:    Encrypter         = new Encrypter    // Handles encrypting/decrypting operation
 
   private var binding: Option[Future[ServerBinding]] = None
 
@@ -47,9 +49,18 @@ class EntryPoint(val modules: ModulesChain) {
                 case Failure(_) =>
                   complete(InvalidAuthorizationStringError("Receiver authorization string is invalid"))
               }
+              case `Admin` => AuthorizationString(auth) match {
+                case Success(authorizationString) => InternalApiRoute()
+                case Failure(_) =>
+                  complete(InvalidAuthorizationStringError("Admin authorization string is invalid"))
+              }
+              case _ => complete(AccessDeniedError("Invalid Client-Entity"))
             }
           }
       }
+    } ~
+      pathPrefix("vmanage") {
+
     }
 
   def main(sslContext: Option[SSLContext]): Try[StatsHolder] =
@@ -60,6 +71,7 @@ class EntryPoint(val modules: ModulesChain) {
       val endpointConf = modules.config.mainBlock.endpointConfig
 
       sslContext match {
+
         case Some(ssl) =>
           this.binding = Some(
             Http().bindAndHandle(routes,

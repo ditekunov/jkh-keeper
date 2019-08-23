@@ -11,6 +11,7 @@ import scala.util.Try
 object Password {
 
   type Password = Refined[String, PasswordPredicate]
+
   object Password {
     def unapply(arg: Password): Option[String] = Some(arg.value)
 
@@ -22,8 +23,8 @@ object Password {
   /**
     * Types, that validate Password
     */
-  private type maxPasswordSize = MaxSize[W.`64`.T]
-  private type minPasswordSize = MinSize[W.`6`.T]
+  private type maxPasswordSize = MaxSize[W.`128`.T]
+  private type minPasswordSize = MinSize[W.`8`.T]
   //  private type Password
   // Regex   = MatchesRegex[W.`^[a-z0-9_-]{3,16}$`.T] //TODO
 

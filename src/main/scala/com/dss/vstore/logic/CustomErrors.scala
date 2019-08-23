@@ -55,7 +55,7 @@ final case class NoSuchClientError(message: String, requestId: String = "")
   val code: String = `NoSuchClient`
 }
 
-final case class NoSuchAdminError(message: String="", requestId: String = "")
+final case class NoSuchAdminError(message: String = "", requestId: String = "")
   extends CustomError(message) {
   val code: String = `NoSuchAdmin`
 }
@@ -65,17 +65,17 @@ final case class ClientAlreadyExistsError(message: String, requestId: String = "
   val code: String = `ClientAlreadyExists`
 }
 
-final case class InvalidPasswordError(message: String="", requestId: String = "")
+final case class InvalidPasswordError(message: String = "", requestId: String = "")
   extends CustomError(message) {
   val code: String = `InvalidPassword`
 }
 
-final case class NoSuchCounterError(message: String="", requestId: String = "")
+final case class NoSuchCounterError(message: String = "", requestId: String = "")
   extends CustomError(message) {
   val code: String = `NoSuchCounter`
 }
 
-final case class NoSuchReceiverError(message: String="", requestId: String = "")
+final case class NoSuchReceiverError(message: String = "", requestId: String = "")
   extends CustomError(message) {
   val code: String = `NoSuchReceiver`
 }

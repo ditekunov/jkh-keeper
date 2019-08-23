@@ -71,9 +71,9 @@ private[vstore] object StatsSupport {
      */
     @tailrec
     private def adjustMaxOpenConnections(): Unit = {
-      val co         = connectionsOpened.sum
-      val cc         = connectionsClosed.sum
-      val moc        = maxOpenConnections.get
+      val co = connectionsOpened.sum
+      val cc = connectionsClosed.sum
+      val moc = maxOpenConnections.get
       val currentMoc = co - cc
       if (currentMoc > moc)
         if (!maxOpenConnections.compareAndSet(moc, currentMoc)) adjustMaxOpenConnections()
@@ -120,7 +120,7 @@ private[vstore] object StatsSupport {
       */
     def watchRequests() = new GraphStage[FlowShape[HttpRequest, HttpRequest]] {
 
-      val in  = Inlet[HttpRequest]("RequestCounter.in")
+      val in = Inlet[HttpRequest]("RequestCounter.in")
       val out = Outlet[HttpRequest]("RequestCounter.out")
 
       override val shape = FlowShape.of(in, out)
@@ -166,7 +166,7 @@ private[vstore] object StatsSupport {
       */
     def watchResponses() = new GraphStage[FlowShape[HttpResponse, HttpResponse]] {
 
-      val in  = Inlet[HttpResponse]("ResponseCounter.in")
+      val in = Inlet[HttpResponse]("ResponseCounter.in")
       val out = Outlet[HttpResponse]("ResponseCounter.out")
 
       override val shape = FlowShape.of(in, out)
@@ -197,6 +197,7 @@ private[vstore] object StatsSupport {
         throw ex
     }
   }
+
 }
 
 /**

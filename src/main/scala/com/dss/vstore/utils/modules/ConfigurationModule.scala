@@ -13,6 +13,7 @@ case class Timeouts(bootingTimeout: Int)
 
 trait ConfigurationModule {
   val config: ParsedConfig
+  val encrypter: Encrypter
 }
 
 trait ConfigurationModuleImpl extends ConfigurationModule {
@@ -35,4 +36,6 @@ trait ConfigurationModuleImpl extends ConfigurationModule {
     case Success(conf) => Some(conf)
     case Failure(_) => None
   }
+
+  override lazy val encrypter: Encrypter = new Encrypter
 }

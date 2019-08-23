@@ -3,13 +3,13 @@ package com.dss.vstore.logic.http.routing.client.api
 import akka.actor.ActorSystem
 import akka.http.scaladsl.coding.{Deflate, Gzip, NoCoding}
 import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
-import com.dss.vstore.utils.{ModulesChain, Requester}
-import akka.http.scaladsl.server.directives.CodingDirectives.encodeResponseWith
 import akka.http.scaladsl.server.RouteConcatenation._
-import com.dss.vstore.utils.modules.ParsedConfig
+import akka.http.scaladsl.server.directives.CodingDirectives.encodeResponseWith
+import akka.stream.ActorMaterializer
+import com.dss.vstore.logic.models.ClientMeta
+import com.dss.vstore.utils.modules.{Encrypter, ParsedConfig}
 import com.dss.vstore.utils.types.AuthorizationString.AuthorizationString
-import com.dss.vstore.logic.models.{ClientData, ClientMeta}
+import com.dss.vstore.utils.{ModulesChain, Requester}
 
 import scala.concurrent.ExecutionContext
 
@@ -18,10 +18,10 @@ object ClientApiRoute {
   class ClientApiRoutes(client: Requester)(implicit modules: ModulesChain) {
 
     implicit val materializer: ActorMaterializer = modules.materializer
-    implicit val system:       ActorSystem       = modules.system
-    implicit val ec:           ExecutionContext  = modules.system.dispatcher
-    implicit val config:       ParsedConfig      = modules.config
-
+    implicit val system: ActorSystem             = modules.system
+    implicit val ec: ExecutionContext            = modules.system.dispatcher
+    implicit val config: ParsedConfig            = modules.config
+    implicit val encrypter: Encrypter            = modules.encrypter
 
     /**
       * Returns a [[Route]] which handles bucket operations
@@ -30,22 +30,18 @@ object ClientApiRoute {
       lazy val loginHash = encrypter.getLogin(auth)
       lazy val passwordHash = encrypter.getPassword(auth)
 
-      def getClient = ClientGetRoute(client).getClient(loginHash)
+      def getClient: Route = ClientGetRoute(client).getClient(loginHash)
 
-      def headClient = ClientHeadRoute(client).headClient(loginHash)
+      def headClient: Route = ClientHeadRoute(client).headClient(loginHash)
 
-      def putClient = ClientPutRoute(client).putClient(loginHash, passwordHash)
+      def putClient: Route = ClientPutRoute(client).putClient(loginHash, passwordHash)
 
-      def postClient = ClientPostRoute(client).postClient(loginHash)
+      def postClient: Route = ClientPostRoute(client).postClient(loginHash)
 
-      def deleteClient = ClientDeleteRoute(client).deleteClient(loginHash)
+      def deleteClient: Route = ClientDeleteRoute(client).deleteClient(loginHash)
 
       encodeResponseWith(NoCoding, Gzip, Deflate) {
-        getClient ~
-          headClient ~
-          putClient ~
-          postClient ~
-          deleteClient
+        getClient ~ headClient ~ putClient ~ postClient ~ deleteClient
       }
     }
   }

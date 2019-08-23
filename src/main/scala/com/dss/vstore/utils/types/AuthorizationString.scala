@@ -11,6 +11,7 @@ import scala.util.Try
 object AuthorizationString {
 
   type AuthorizationString = Refined[String, AuthorizationStringPredicate]
+
   object AuthorizationString {
     def unapply(arg: AuthorizationString): Option[String] = Some(arg.value)
 
