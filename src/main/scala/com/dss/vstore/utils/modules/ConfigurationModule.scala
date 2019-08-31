@@ -4,12 +4,13 @@ import javax.net.ssl.SSLContext
 
 import scala.util.{Failure, Success, Try}
 
-case class ParsedConfig(mainBlock: MainBlock)
+case class ParsedConfig(mainBlock: MainBlock, misc: Misc)
 
 case class MainBlock(endpointConfig: EndpointConfig, timeouts: Timeouts)
 
 case class EndpointConfig(host: String, port: Int)
 case class Timeouts(bootingTimeout: Int)
+case class Misc(healthcheckUrl: String)
 
 trait ConfigurationModule {
   val config: ParsedConfig
@@ -29,6 +30,9 @@ trait ConfigurationModuleImpl extends ConfigurationModule {
       Timeouts(
         tryConfig(configLoaded.getInt("main_block.timeouts.booting_timeout")).getOrElse(60)
       )
+    ),
+    Misc(
+      tryConfig(configLoaded.getString("misc.healthcheck_url")).getOrElse("http://localhost:8080/vmanage/healthcheck")
     )
   )
 
